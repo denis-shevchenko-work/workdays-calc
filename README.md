@@ -69,7 +69,7 @@ Adaptors are coming with corresponding entities and mappers to prevent coupling 
 
 Following secondary driven gateway adapters defined in [gateways](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fgateways) package:
 * [NonWorkingDayInMemoryRepository](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fgateways%2FNonWorkingDayInMemoryRepository.java) - to store non-working days in memory
-* [NonWorkingDaysFilePersistenceService](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fgateways%2FNonWorkingDaysFilePersistenceService.java) - to persist non-working days in local files
+* [NonWorkingDaysJsonFilePersistenceAdaptorService](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fgateways%2FNonWorkingDaysJsonFilePersistenceAdaptorService.java) - to persist non-working days in local files
 
 Library is configured with [Spring](https://spring.io/) and [Spring Boot](https://spring.io/projects/spring-boot) .
 Alternatively there is a manual non-spring configuration. 
