@@ -40,7 +40,7 @@ public class NoSpringConfiguration {
         InputStream inputStream = NoSpringConfiguration.class.getClassLoader().getResourceAsStream("application.properties");
         try {
             prop.load(inputStream);
-            prop.getProperty("workday.gateway.persistence.file.pathToRepository", DEFAULT_WORKDAYS_REPOSITORY_JSON);
+            pathToRepositoryFile = prop.getProperty("workday.gateway.persistence.file.pathToRepository", DEFAULT_WORKDAYS_REPOSITORY_JSON);
         } catch (IOException e) {
             log.error("Error loading application.properties", e);
         }
