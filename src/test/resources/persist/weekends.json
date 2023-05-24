@@ -1,0 +1,6 @@
+[
+  {
+    "expression": "1 0 0 ? * SAT,SUN *",
+    "name": "weekends"
+  }
+]
