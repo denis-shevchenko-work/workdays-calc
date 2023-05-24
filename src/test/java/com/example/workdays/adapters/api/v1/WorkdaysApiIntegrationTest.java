@@ -48,8 +48,6 @@ public class WorkdaysApiIntegrationTest {
 
     @Test
     public void givenDefaultHolidays_whenRemoved_CouldBeReloaded() {
-        WorkdaysApi workdaysApi = WorkdaysApi.builder().addDefaultHolidays().buildPreconfigured();
-
         workdaysApi.getNonWorkingDaysPersister().saveData();
         workdaysApi.getNonWorkingDaysManager().remove(new Day("1 0 0 04 07 ? *", "Independence Day"));
 
