@@ -141,6 +141,6 @@ To persist non-working days:
 
 ## Possible improvements
 
-Please note that Day DTO's expresion starts with 1 second of a new day.  
-It is possible to fulfill it with more convenient builder accepting  
-dayOfMonth or dayOfWeek and month and year fields or cron expression without time part.
+Please note that Day DTO's expresion starts with 1st second of a new day.  
+It is possible to fulfill Day DTO with more convenient builder accepting  
+`dayOfMonth` or `dayOfWeek` along with `month` and `year` fields or cron expression without time part.
