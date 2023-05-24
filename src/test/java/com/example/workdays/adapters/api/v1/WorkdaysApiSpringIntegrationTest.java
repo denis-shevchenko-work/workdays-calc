@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class WorkdaysApiSpringIntegrationTest {
 
     @Autowired
-    WorkdaysApi integration;
+    private WorkdaysApi workdaysApi;
 
 
     public static Stream<Arguments> source() {
@@ -36,39 +36,39 @@ public class WorkdaysApiSpringIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("source")
-    public void givenDefaultIntegration_whenCalled_returnsExpected(String from, String till, int expected) {
-        WorkdaysCalculator calculator = integration.getWorkdaysCalculator();
+    public void givenDefaultHolidays_whenCalled_returnsExpected(String from, String till, int expected) {
+        WorkdaysCalculator calculator = workdaysApi.getWorkdaysCalculator();
         int actual = calculator.workdaysBetweenInclusive(from, till);
         assertEquals(expected, actual);
     }
 
     @Test
     public void givenInalidDay_whenAdded_throwsException() {
-        assertThrows(InvalidDayException.class, () -> integration.getNonWorkingDaysManager().add(new Day("", "")));
+        assertThrows(InvalidDayException.class, () -> workdaysApi.getNonWorkingDaysManager().add(new Day("", "")));
     }
 
     @Test
-    public void givenDefaultIntegration_whenAllDaysAreListed_returnsNotEmpty() {
-        WorkdaysApi.WorkdaysApiBuilder.addDefaultNonWorkingDays(integration.getNonWorkingDaysManager());
-        assertFalse(integration.getNonWorkingDaysManager().getAll().isEmpty());
+    public void givenDefaultHolidays_whenAllDaysAreListed_returnsNotEmpty() {
+        WorkdaysApi.WorkdaysApiBuilder.addDefaultNonWorkingDays(workdaysApi.getNonWorkingDaysManager());
+        assertFalse(workdaysApi.getNonWorkingDaysManager().getAll().isEmpty());
     }
 
     @Test
-    public void givenDefaultIntegration_whenSaved_CouldBeLoaded() {
-        integration.getNonWorkingDaysPersister().saveData();
-        integration.getNonWorkingDaysPersister().loadData();
+    public void givenDefaultHolidays_whenSaved_CouldBeLoaded() {
+        workdaysApi.getNonWorkingDaysPersister().saveData();
+        workdaysApi.getNonWorkingDaysPersister().loadData();
     }
 
     @Test
-    public void givenDefaultIntegration_whenRemoved_CouldBeReloaded() {
-        integration.getNonWorkingDaysPersister().saveData();
-        integration.getNonWorkingDaysManager().remove(new Day("1 0 0 04 07 ? *", "Independence Day"));
+    public void givenDefaultHolidays_whenRemoved_CouldBeReloaded() {
+        workdaysApi.getNonWorkingDaysPersister().saveData();
+        workdaysApi.getNonWorkingDaysManager().remove(new Day("1 0 0 04 07 ? *", "Independence Day"));
 
-        int actual = integration.getWorkdaysCalculator().workdaysBetweenInclusive("2022-06-27", "2022-07-04");
+        int actual = workdaysApi.getWorkdaysCalculator().workdaysBetweenInclusive("2022-06-27", "2022-07-04");
         assertEquals(6, actual);
 
-        integration.getNonWorkingDaysPersister().loadData();
-        actual = integration.getWorkdaysCalculator().workdaysBetweenInclusive("2022-06-27", "2022-07-04");
+        workdaysApi.getNonWorkingDaysPersister().loadData();
+        actual = workdaysApi.getWorkdaysCalculator().workdaysBetweenInclusive("2022-06-27", "2022-07-04");
         assertEquals(5, actual);
     }
 }
