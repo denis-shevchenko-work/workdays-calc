@@ -4,20 +4,20 @@ import com.example.workdays.adapters.api.v1.entities.Day;
 import com.example.workdays.configuration.NoSpringConfiguration;
 import lombok.NoArgsConstructor;
 
-public class Api {
+public class WorkdaysApi {
 
     private final WorkdaysCalculator workdaysCalculator;
     private final NonWorkingDaysPersister nonWorkingDaysPersister;
     private final NonWorkingDaysManager nonWorkingDaysManager;
 
-    private Api(WorkdaysCalculator workdaysCalculator, NonWorkingDaysPersister nonWorkingDaysPersister, NonWorkingDaysManager nonWorkingDaysManager) {
+    private WorkdaysApi(WorkdaysCalculator workdaysCalculator, NonWorkingDaysPersister nonWorkingDaysPersister, NonWorkingDaysManager nonWorkingDaysManager) {
         this.workdaysCalculator = workdaysCalculator;
         this.nonWorkingDaysPersister = nonWorkingDaysPersister;
         this.nonWorkingDaysManager = nonWorkingDaysManager;
     }
 
-    public static ApiBuilder builder() {
-        return new ApiBuilder();
+    public static WorkdaysApiBuilder builder() {
+        return new WorkdaysApiBuilder();
     }
 
     public WorkdaysCalculator getWorkdaysCalculator() {
@@ -34,64 +34,64 @@ public class Api {
 
 
     @NoArgsConstructor
-    public static class ApiBuilder {
+    public static class WorkdaysApiBuilder {
         private WorkdaysCalculator workdaysCalculator;
         private NonWorkingDaysPersister nonWorkingDaysPersister;
         private NonWorkingDaysManager nonWorkingDaysManager;
         private boolean addDefaultHolidays = false;
         private String pathToRepositoryFile;
 
-        public ApiBuilder preconfiguredPathToRepositoryFile(String pathToRepositoryFile) {
+        public WorkdaysApiBuilder preconfiguredPathToRepositoryFile(String pathToRepositoryFile) {
             this.pathToRepositoryFile = pathToRepositoryFile;
             return this;
         }
 
-        public Api buildPreconfigured() {
-            Api api;
+        public WorkdaysApi buildPreconfigured() {
+            WorkdaysApi workdaysApi;
             if(pathToRepositoryFile != null) {
-                api = NoSpringConfiguration.buildDefault(pathToRepositoryFile);
+                workdaysApi = NoSpringConfiguration.buildDefault(pathToRepositoryFile);
             }  else {
-                api = NoSpringConfiguration.buildDefault();
+                workdaysApi = NoSpringConfiguration.buildDefault();
             }
             if (addDefaultHolidays) {
-                addDefaultNonWorkingDays(api.getNonWorkingDaysManager());
+                addDefaultNonWorkingDays(workdaysApi.getNonWorkingDaysManager());
             }
-            return api;
+            return workdaysApi;
         }
 
-        public ApiBuilder workdaysCalculator(WorkdaysCalculator workdaysCalculator) {
+        public WorkdaysApiBuilder workdaysCalculator(WorkdaysCalculator workdaysCalculator) {
             this.workdaysCalculator = workdaysCalculator;
             return this;
         }
 
-        public ApiBuilder nonWorkingDaysPersister(NonWorkingDaysPersister nonWorkingDaysPersister) {
+        public WorkdaysApiBuilder nonWorkingDaysPersister(NonWorkingDaysPersister nonWorkingDaysPersister) {
             this.nonWorkingDaysPersister = nonWorkingDaysPersister;
             return this;
         }
 
-        public ApiBuilder nonWorkingDaysManager(NonWorkingDaysManager nonWorkingDaysManager) {
+        public WorkdaysApiBuilder nonWorkingDaysManager(NonWorkingDaysManager nonWorkingDaysManager) {
             this.nonWorkingDaysManager = nonWorkingDaysManager;
             return this;
         }
 
-        public ApiBuilder addDefaultHolidays() {
+        public WorkdaysApiBuilder addDefaultHolidays() {
             this.addDefaultHolidays = true;
             return this;
         }
 
-        public Api build() {
-            Api api;
+        public WorkdaysApi build() {
+            WorkdaysApi workdaysApi;
             if (workdaysCalculator == null || nonWorkingDaysPersister == null || nonWorkingDaysManager == null) {
                 throw new IllegalStateException("Missing one of the following: workdaysCalculator, nonWorkingDaysPersister, nonWorkingDaysManager");
             }
             else {
-                api = new Api(workdaysCalculator, nonWorkingDaysPersister, nonWorkingDaysManager);
+                workdaysApi = new WorkdaysApi(workdaysCalculator, nonWorkingDaysPersister, nonWorkingDaysManager);
             }
 
             if (addDefaultHolidays) {
-                ApiBuilder.addDefaultNonWorkingDays(nonWorkingDaysManager);
+                WorkdaysApiBuilder.addDefaultNonWorkingDays(nonWorkingDaysManager);
             }
-            return api;
+            return workdaysApi;
         }
 
         public static void addDefaultNonWorkingDays(NonWorkingDaysManager nonWorkingDaysManager) {

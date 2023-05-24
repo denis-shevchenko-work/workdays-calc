@@ -1,6 +1,6 @@
 package com.example.workdays.configuration;
 
-import com.example.workdays.adapters.api.v1.Api;
+import com.example.workdays.adapters.api.v1.WorkdaysApi;
 import com.example.workdays.adapters.api.v1.NonWorkingDaysManager;
 import com.example.workdays.adapters.api.v1.NonWorkingDaysPersister;
 import com.example.workdays.adapters.api.v1.WorkdaysCalculator;
@@ -34,7 +34,7 @@ public class NoSpringConfiguration {
 
     public static final String DEFAULT_WORKDAYS_REPOSITORY_JSON = "~/.workdays/repository.json";
 
-    public static Api buildDefault() {
+    public static WorkdaysApi buildDefault() {
         String pathToRepositoryFile = DEFAULT_WORKDAYS_REPOSITORY_JSON;
         Properties prop = new Properties();
         InputStream inputStream = NoSpringConfiguration.class.getClassLoader().getResourceAsStream("application.properties");
@@ -48,7 +48,7 @@ public class NoSpringConfiguration {
         return buildDefault(pathToRepositoryFile);
     }
 
-    public static Api buildDefault(String pathToRepositoryFile) {
+    public static WorkdaysApi buildDefault(String pathToRepositoryFile) {
         //adapters
         pathToRepositoryFile = pathToRepositoryFile.replace("~", System.getProperty("user.home"));
         ObjectMapper objectMapper = new ObjectMapper() {{
@@ -81,7 +81,7 @@ public class NoSpringConfiguration {
                 new NonWorkingDaysManager(manageNonWorkingDayUseCase, dayMapper, dayValidationService);
         NonWorkingDaysPersister nonWorkingDaysPersister =
                 new NonWorkingDaysPersister(domainPersistenceService, domainPersistenceService);
-        return Api.builder()
+        return WorkdaysApi.builder()
                 .nonWorkingDaysManager(nonWorkingDaysManager)
                 .nonWorkingDaysPersister(nonWorkingDaysPersister)
                 .workdaysCalculator(workdaysCalculator)

@@ -53,7 +53,7 @@ From architectural point of view it is possible to define following use cases:
 
 All the use cases are defined in the [usecases](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fdomain%2Fusecases) package.
 
-Following API primary driving adapters defined in [api.v1](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fapi%2Fv1) package:
+Following API primary driving adapters defined in [workdaysApi.v1](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fapi%2Fv1) package:
 * [WorkdaysCalculator](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fapi%2Fv1%2FWorkdaysCalculator.java) - to calculate the number of workdays
   * int workdaysBetweenInclusive(LocalDate from, LocalDate till)
   * int workdaysBetweenInclusive(String from, String till)
@@ -95,8 +95,8 @@ Spring configuration is done automatically by Spring Boot.
 Alternatively you can define Bean manually.
 ```java
     @Bean
-    public Api api() {
-        return Api.builder()
+    public WorkdaysApi workdaysApi() {
+        return WorkdaysApi.builder()
             .addDefaultHolidays()
             .buildPreconfigured();
     }
@@ -104,11 +104,11 @@ Alternatively you can define Bean manually.
 or customize it
 ```java
     @Bean
-    public Api api(
+    public WorkdaysApi workdaysApi(
             WorkdaysCalculator workdaysCalculator,
             NonWorkingDaysPersister nonWorkingDaysPersister,
             NonWorkingDaysManager nonWorkingDaysManager) {
-        return Api.builder()
+        return WorkdaysApi.builder()
                 .nonWorkingDaysManager(nonWorkingDaysManager)
                 .nonWorkingDaysPersister(nonWorkingDaysPersister)
                 .workdaysCalculator(workdaysCalculator)
@@ -117,26 +117,26 @@ or customize it
 ```
 It is also possible to use library without Spring
 ```java
-    Api api = Api.builder().addDefaultHolidays() .buildPreconfigured();
+    WorkdaysApi workdaysApi = WorkdaysApi.builder().addDefaultHolidays() .buildPreconfigured();
 ```
 ```java
-    Api api = Api.builder().addDefaultHolidays().preconfiguredPathToRepositoryFile("~/.workdays/repository.json").buildPreconfigured();
+    WorkdaysApi workdaysApi = WorkdaysApi.builder().addDefaultHolidays().preconfiguredPathToRepositoryFile("~/.workdays/repository.json").buildPreconfigured();
 ```
 Anyway after that you can use it as follows:
 ```java
-    int workdays = api.workdaysCalculator().workdaysBetweenInclusive("2022-06-27", "2022-07-04");
+    int workdays = workdaysApi.workdaysCalculator().workdaysBetweenInclusive("2022-06-27", "2022-07-04");
 ```
 To add non-working day:
 ```java
-    api.nonWorkingDaysManager().add(new Day.("1 0 0 2 2 ? 2023", "New Year"));
+    workdaysApi.nonWorkingDaysManager().add(new Day.("1 0 0 2 2 ? 2023", "New Year"));
 ```
 To remove non-working day:
 ```java
-    api.nonWorkingDaysManager().remove(new Day.("1 0 0 2 2 ? 2023", "New Year"));
+    workdaysApi.nonWorkingDaysManager().remove(new Day.("1 0 0 2 2 ? 2023", "New Year"));
 ```
 To persist non-working days:
 ```java
-    api.nonWorkingDaysPersister().saveData();
+    workdaysApi.nonWorkingDaysPersister().saveData();
 ```
 
 ## Possible improvements

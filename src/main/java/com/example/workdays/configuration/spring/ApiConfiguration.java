@@ -1,6 +1,6 @@
 package com.example.workdays.configuration.spring;
 
-import com.example.workdays.adapters.api.v1.Api;
+import com.example.workdays.adapters.api.v1.WorkdaysApi;
 import com.example.workdays.adapters.api.v1.NonWorkingDaysManager;
 import com.example.workdays.adapters.api.v1.NonWorkingDaysPersister;
 import com.example.workdays.adapters.api.v1.WorkdaysCalculator;
@@ -39,12 +39,12 @@ public class ApiConfiguration {
     }
 
     @Bean
-    public Api api(
+    public WorkdaysApi api(
             WorkdaysCalculator workdaysCalculator,
             NonWorkingDaysPersister nonWorkingDaysPersister,
             NonWorkingDaysManager nonWorkingDaysManager,
             @Value("${workday.api.addDefaultHolidays:false}") Boolean addDefaultHolidays) {
-        Api.ApiBuilder builder = Api.builder()
+        WorkdaysApi.WorkdaysApiBuilder builder = WorkdaysApi.builder()
                 .nonWorkingDaysManager(nonWorkingDaysManager)
                 .nonWorkingDaysPersister(nonWorkingDaysPersister)
                 .workdaysCalculator(workdaysCalculator);
