@@ -12,10 +12,4 @@ public class Day {
     @NotEmpty
     String name;
 
-/*    String dayOfWeek;
-    String dayOfMonth;
-    String month;
-    String year;*/
-
-
 }

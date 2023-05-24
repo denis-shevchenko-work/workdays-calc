@@ -4,7 +4,6 @@ import com.example.workdays.adapters.api.v1.Api;
 import com.example.workdays.adapters.api.v1.NonWorkingDaysManager;
 import com.example.workdays.adapters.api.v1.NonWorkingDaysPersister;
 import com.example.workdays.adapters.api.v1.WorkdaysCalculator;
-import com.example.workdays.adapters.api.v1.entities.Day;
 import com.example.workdays.adapters.api.v1.mappers.DayMapper;
 import com.example.workdays.adapters.api.v1.validators.DayValidationService;
 import com.example.workdays.adapters.gateways.NonWorkingDayInMemoryRepository;
@@ -88,6 +87,5 @@ public class NoSpringConfiguration {
                 .workdaysCalculator(workdaysCalculator)
                 .build();
     }
-
 
 }

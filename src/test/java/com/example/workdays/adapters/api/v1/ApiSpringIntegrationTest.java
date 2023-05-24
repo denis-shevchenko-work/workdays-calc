@@ -1,21 +1,31 @@
-package com.example.workdays.configuration;
+package com.example.workdays.adapters.api.v1;
 
-import com.example.workdays.adapters.api.v1.Api;
-import com.example.workdays.adapters.api.v1.WorkdaysCalculator;
 import com.example.workdays.adapters.api.v1.entities.Day;
 import com.example.workdays.adapters.api.v1.exceptions.InvalidDayException;
+import com.example.workdays.configuration.spring.ApiConfiguration;
+import com.example.workdays.configuration.spring.DomainConfiguration;
+import com.example.workdays.configuration.spring.GatewaysConfiguration;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ApiIntegrationTest {
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = {ApiConfiguration.class, DomainConfiguration.class, GatewaysConfiguration.class})
+public class ApiSpringIntegrationTest {
 
-    static Api integration = Api.builder().addDefaultHolidays().buildPreconfigured();
+    @Autowired
+    Api integration;
+
 
     public static Stream<Arguments> source() {
         return Stream.of(
@@ -39,6 +49,7 @@ public class ApiIntegrationTest {
 
     @Test
     public void givenDefaultIntegration_whenAllDaysAreListed_returnsNotEmpty() {
+        Api.ApiBuilder.addDefaultNonWorkingDays(integration.getNonWorkingDaysManager());
         assertFalse(integration.getNonWorkingDaysManager().getAll().isEmpty());
     }
 
