@@ -11,6 +11,7 @@ import com.example.workdays.domain.usecases.manage.ManageNonWorkingDaysUseCase;
 import com.example.workdays.domain.usecases.persistence.ExportNonWorkingDaysUseCase;
 import com.example.workdays.domain.usecases.persistence.ImportNonWorkingDaysUseCase;
 import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,10 +42,17 @@ public class ApiConfiguration {
     public Api api(
             WorkdaysCalculator workdaysCalculator,
             NonWorkingDaysPersister nonWorkingDaysPersister,
-            NonWorkingDaysManager nonWorkingDaysManager) {
-        return new Api(workdaysCalculator, nonWorkingDaysPersister, nonWorkingDaysManager);
+            NonWorkingDaysManager nonWorkingDaysManager,
+            @Value("${workday.api.addDefaultHolidays:false}") Boolean addDefaultHolidays) {
+        Api.ApiBuilder builder = Api.builder()
+                .nonWorkingDaysManager(nonWorkingDaysManager)
+                .nonWorkingDaysPersister(nonWorkingDaysPersister)
+                .workdaysCalculator(workdaysCalculator);
+        if (addDefaultHolidays) {
+                builder.addDefaultHolidays();
+        }
+        return builder.build();
     }
-
 
     @Bean
     DayMapper dayMapper() {
@@ -55,4 +63,5 @@ public class ApiConfiguration {
     public DayValidationService dayValidationService() {
         return new DayValidationService();
     }
+
 }

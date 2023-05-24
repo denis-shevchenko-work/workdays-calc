@@ -4,7 +4,6 @@ import com.example.workdays.adapters.api.v1.Api;
 import com.example.workdays.adapters.api.v1.WorkdaysCalculator;
 import com.example.workdays.adapters.api.v1.entities.Day;
 import com.example.workdays.adapters.api.v1.exceptions.InvalidDayException;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -16,13 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ApiIntegrationTest {
 
-    static Api integration = Api.buildDefault();
-
-    @BeforeAll
-    public static void init() {
-        integration = Api.buildDefault();
-        NoSpringConfiguration.addDefaultNonWorkingDays(integration.getNonWorkingDaysManager());
-    }
+    static Api integration = Api.builder().addDefaultHolidays().buildPreconfigured();
 
     public static Stream<Arguments> source() {
         return Stream.of(

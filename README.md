@@ -47,21 +47,21 @@ It has a lot of features and can be used to parse cron expressions and calculate
 
 From architectural point of view it is possible to define following use cases:
 1. [CalculateWorkDaysUseCase](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fdomain%2Fusecases%2Fcalculate%2FCalculateWorkDaysUseCase.java) to calculate the number of workdays 
-2. [ManageNonWorkingDayUseCase](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fdomain%2Fusecases%2Fmanage%2FManageNonWorkingDayUseCase.java) to set/add non-working days
+2. [ManageNonWorkingDaysUseCase](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fdomain%2Fusecases%2Fmanage%2FManageNonWorkingDaysUseCase.java) to set/add non-working days
 3. [ExportNonWorkingDaysUseCase](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fdomain%2Fusecases%2Fpersistence%2FExportNonWorkingDaysUseCase.java) to persist non-working days
 4. [ImportNonWorkingDaysUseCase](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fdomain%2Fusecases%2Fpersistence%2FImportNonWorkingDaysUseCase.java) to load non-working days
 
 All the use cases are defined in the [usecases](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fdomain%2Fusecases) package.
 
-Following API primary driving adapters defined in [api.v1](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fapi%2Fv1)`adapters.api.v1` package:
-* [Calculator](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fapi%2Fv1%2FCalculator.java) - to calculate the number of workdays
+Following API primary driving adapters defined in [api.v1](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fapi%2Fv1) package:
+* [WorkdaysCalculator](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fapi%2Fv1%2FWorkdaysCalculator.java) - to calculate the number of workdays
   * int workdaysBetweenInclusive(LocalDate from, LocalDate till)
   * int workdaysBetweenInclusive(String from, String till)
-* [NonWorkingDayManager](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fapi%2Fv1%2FNonWorkingDayManager.java) - to set/add non-working days
+* [NonWorkingDaysManager](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fapi%2Fv1%2FNonWorkingDaysManager.java) - to set/add non-working days
   * Collection<Day> getAll()
   * add(Day day)
   * remove(Day day)
-* [Persister](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fapi%2Fv1%2FPersister.java) - to import/export non-working days
+* [NonWorkingDaysPersister](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fapi%2Fv1%2FNonWorkingDaysPersister.java) - to import/export non-working days
   * loadData()
   * saveData()
 
@@ -72,4 +72,75 @@ Following secondary driven gateway adapters defined in [gateways](src%2Fmain%2Fj
 * [NonWorkingDaysFilePersistenceService](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fadapters%2Fgateways%2FNonWorkingDaysFilePersistenceService.java) - to persist non-working days in local files
 
 Library is configured with [Spring](https://spring.io/) and [Spring Boot](https://spring.io/projects/spring-boot) .
-Alternatively there is a Manual non-spring configuration. 
+Alternatively there is a manual non-spring configuration. 
+
+## Usage
+To use the library you need to add it as a dependency to your project.
+For example, if you are using maven you need to add following dependency to your pom.xml:
+```xml
+<dependency>
+<groupId>com.example</groupId>
+<artifactId>workdays-calc</artifactId>
+<version>0.0.1-SNAPSHOT</version>
+</dependency>
+```
+
+Persistence is configured to use local files.
+Path to repository is defined in [application.properties](src%2Fmain%2Fresources%2Fapplication.properties)
+```properties
+workday.gateway.persistence.file.pathToRepository=~/.workdays/repository.json
+```
+
+Spring configuration is done automatically by Spring Boot.
+Alternatively you can define Bean manually.
+```java
+    @Bean
+    public Api api() {
+        return Api.builder()
+            .addDefaultHolidays()
+            .buildPreconfigured();
+    }
+```
+or customize it
+```java
+    @Bean
+    public Api api(
+            WorkdaysCalculator workdaysCalculator,
+            NonWorkingDaysPersister nonWorkingDaysPersister,
+            NonWorkingDaysManager nonWorkingDaysManager) {
+        return Api.builder()
+                .nonWorkingDaysManager(nonWorkingDaysManager)
+                .nonWorkingDaysPersister(nonWorkingDaysPersister)
+                .workdaysCalculator(workdaysCalculator)
+                .build();
+    }
+```
+It is also possible to use library without Spring
+```java
+    Api api = Api.builder().addDefaultHolidays() .buildPreconfigured();
+```
+```java
+    Api api = Api.builder().addDefaultHolidays().preconfiguredPathToRepositoryFile("~/.workdays/repository.json").buildPreconfigured();
+```
+Anyway after that you can use it as follows:
+```java
+    int workdays = api.workdaysCalculator().workdaysBetweenInclusive("2022-06-27", "2022-07-04");
+```
+To add non-working day:
+```java
+    api.nonWorkingDaysManager().add(new Day.("1 0 0 2 2 ? 2023", "New Year"));
+```
+To remove non-working day:
+```java
+    api.nonWorkingDaysManager().remove(new Day.("1 0 0 2 2 ? 2023", "New Year"));
+```
+To persist non-working days:
+```java
+    api.nonWorkingDaysPersister().saveData();
+```
+
+## Possible improvements
+
+Please note that Day DTO's expresion starts with 1 second of a new day.  
+It is possible to fulfill it with more convenient builder accepting  
+dayOfMonth or dayOfWeek and month and year fields or cron expression without time part.

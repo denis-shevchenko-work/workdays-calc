@@ -29,7 +29,7 @@ public class GatewaysConfiguration {
 
     @Bean
     NonWorkingDaysPersistencePort persistencePort(
-            @Value("${gateway.persistence.file.pathToRepository}") String pathToRepository,
+            @Value("${workday.gateway.persistence.file.pathToRepository}") String pathToRepository,
             ObjectMapper mapper) {
         Path path = Path.of(pathToRepository.replace("~", System.getProperty("user.home")));
         return new NonWorkingDaysJsonFilePersistenceAdaptorService(path, mapper);
@@ -39,6 +39,5 @@ public class GatewaysConfiguration {
     public NonWorkingDaysRepository repository() {
         return new NonWorkingDayInMemoryRepository(Set.of());
     }
-
 
 }

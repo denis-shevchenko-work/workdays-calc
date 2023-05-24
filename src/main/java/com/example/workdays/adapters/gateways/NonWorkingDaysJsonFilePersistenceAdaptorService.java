@@ -30,6 +30,10 @@ public class NonWorkingDaysJsonFilePersistenceAdaptorService implements NonWorki
         File file = path.toFile();
         try {
             if (!file.exists()) {
+                File parent = file.getParentFile();
+                if (parent != null && !parent.exists()){
+                    parent.mkdirs();
+                }
                 file.createNewFile();
             }
             mapper.writeValue(file, days);

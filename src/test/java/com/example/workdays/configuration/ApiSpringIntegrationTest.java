@@ -4,6 +4,9 @@ import com.example.workdays.adapters.api.v1.Api;
 import com.example.workdays.adapters.api.v1.WorkdaysCalculator;
 import com.example.workdays.adapters.api.v1.entities.Day;
 import com.example.workdays.adapters.api.v1.exceptions.InvalidDayException;
+import com.example.workdays.configuration.spring.ApiConfiguration;
+import com.example.workdays.configuration.spring.DomainConfiguration;
+import com.example.workdays.configuration.spring.GatewaysConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(classes = {ApiConfiguration.class, DomainConfiguration.class, GatewaysConfiguration.class})
 public class ApiSpringIntegrationTest {
 
     @Autowired
@@ -48,6 +51,7 @@ public class ApiSpringIntegrationTest {
 
     @Test
     public void givenDefaultIntegration_whenAllDaysAreListed_returnsNotEmpty() {
+        Api.ApiBuilder.addDefaultNonWorkingDays(integration.getNonWorkingDaysManager());
         assertFalse(integration.getNonWorkingDaysManager().getAll().isEmpty());
     }
 

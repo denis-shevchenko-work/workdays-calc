@@ -21,12 +21,33 @@ import com.example.workdays.domain.usecases.manage.NonWorkingDaysManagingService
 import com.example.workdays.domain.usecases.persistence.NonWorkingDaysPersistenceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Properties;
 import java.util.Set;
 
+@Slf4j
 public class NoSpringConfiguration {
+
+    public static final String DEFAULT_WORKDAYS_REPOSITORY_JSON = "~/.workdays/repository.json";
+
+    public static Api buildDefault() {
+        String pathToRepositoryFile = DEFAULT_WORKDAYS_REPOSITORY_JSON;
+        Properties prop = new Properties();
+        InputStream inputStream = NoSpringConfiguration.class.getClassLoader().getResourceAsStream("application.properties");
+        try {
+            prop.load(inputStream);
+            prop.getProperty("workday.gateway.persistence.file.pathToRepository", DEFAULT_WORKDAYS_REPOSITORY_JSON);
+        } catch (IOException e) {
+            log.error("Error loading application.properties", e);
+        }
+
+        return buildDefault(pathToRepositoryFile);
+    }
 
     public static Api buildDefault(String pathToRepositoryFile) {
         //adapters
@@ -57,20 +78,16 @@ public class NoSpringConfiguration {
 
         //api
         WorkdaysCalculator workdaysCalculator = new WorkdaysCalculator(workDaysUseCase);
-        NonWorkingDaysManager workingDaysManager =
+        NonWorkingDaysManager nonWorkingDaysManager =
                 new NonWorkingDaysManager(manageNonWorkingDayUseCase, dayMapper, dayValidationService);
-        NonWorkingDaysPersister workingDaysPersister =
+        NonWorkingDaysPersister nonWorkingDaysPersister =
                 new NonWorkingDaysPersister(domainPersistenceService, domainPersistenceService);
-
-        return new Api(workdaysCalculator, workingDaysPersister, workingDaysManager);
+        return Api.builder()
+                .nonWorkingDaysManager(nonWorkingDaysManager)
+                .nonWorkingDaysPersister(nonWorkingDaysPersister)
+                .workdaysCalculator(workdaysCalculator)
+                .build();
     }
 
-    public static void addDefaultNonWorkingDays(NonWorkingDaysManager nonWorkingDaysManager) {
-        //default configuration
-        nonWorkingDaysManager.add(new Day("1 0 0 ? * SAT,SUN *", "Weekend"));
-        nonWorkingDaysManager.add(new Day("1 0 0 31 12 ? *", "New Year's eve"));
-        nonWorkingDaysManager.add(new Day("1 0 0 1 1 ? *", "New Year"));
-        nonWorkingDaysManager.add(new Day("1 0 0 25 12 ? *", "Christmas"));
-        nonWorkingDaysManager.add(new Day("1 0 0 04 07 ? *", "Independence Day"));
-    }
+
 }
