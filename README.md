@@ -25,11 +25,6 @@ Evaluation points:
 ## Solution
 There are several types of Non-working days. 
 Some of them have a periodic nature, like weekends, and some of them are fixed, like holidays or personal day-offs.
-So Non-working days can be represented as cron expressions.
-
-For example, weekends can be represented as `0 0 0 ? * SAT,SUN *` and holidays as `1 0 0 2 2 ? 2023`.
-
-Each Non-working day has unique expression and described by its name.
 To calculate the number of workdays between two given dates (inclusive) we need to know the number of non-working days between these dates.
 
 So Number of working days is calculated as follows:
@@ -39,11 +34,23 @@ It is assumed that number of working days is requested for local date-time zone.
 The number of non-working days is calculated as follows:
 * for each non-working day in the set of non-working days we check if there are matches between two given dates (inclusive) and if it is we increment the number of non-working days.
 
+Considering that persistence is about to change from local files to database or any other storage, it is good to use Clean Architecture approach.
+
+The idea of Clean Architecture is to put delivery and gateway at the edges of our design. 
+Business logic should not depend on whether we expose a REST or a GraphQL API, and it should not depend on where we store and get data from — a database, a microservice API exposed via gRPC or REST, or a CSV file.
+
+
 ## Implementation
 The solution is implemented as a maven library using the Java programming language.
 One of the way to implement it is to use [cronutils](http://cron-parser.com/ ).
 It has a lot of features and can be used to parse cron expressions and calculate the number of matches in range.
 
+So non-working days will be represented as cron expressions and the number of non-working days will be calculated as the number of matches between two given dates (inclusive).
+`Cronutils` have some limitations, like if task is scheduled for very begining of the day i.e. '0s 0m 0h' it is considedred as already passed. 
+So to make it work for start date cron expression should be shifted by one second.
+Each Non-working day has unique expression and described by its name.
+
+For example, weekends can be represented as `1 0 0 * * SAT,SUN` and Christmas as `1 0 0 25 12 *`.
 
 From architectural point of view it is possible to define following use cases:
 1. [CalculateWorkDaysUseCase](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fworkdays%2Fdomain%2Fusecases%2Fcalculate%2FCalculateWorkDaysUseCase.java) to calculate the number of workdays 
